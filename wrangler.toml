@@ -1,0 +1,14 @@
+name = "phantomsecondline"
+main="src/index.ts"
+compatibility_date = "2024-11-06"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "phantomsecondline"
+database_id = "6efa0978-c266-4e58-a5b0-eb9fa0550006"
+preview_database_id = "test"
+migrations_dir = "migrations"
+
+[observability]
+enabled = true
