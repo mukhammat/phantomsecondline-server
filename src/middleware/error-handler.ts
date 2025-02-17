@@ -1,5 +1,5 @@
 import { HttpError } from '@/error/http-error';
-import { ErrorHandler, error } from 'itty-router';
+import { ErrorHandler } from 'itty-router';
 
 // Глобальный обработчик ошибок
 export const errorHandler: ErrorHandler = (error, request) => {

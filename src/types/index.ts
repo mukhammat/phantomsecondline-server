@@ -1,5 +1,5 @@
 import { IRequestStrict } from "itty-router/types/IRequestStrict";
-import {User} from "@/models/user.model"
+import {UserModel} from "@/models/user.model"
 
 export interface Country {
     country: string;
@@ -7,5 +7,5 @@ export interface Country {
 }
 
 export type IRequest = {  
-user: User,
+user: UserModel,
 } & IRequestStrict

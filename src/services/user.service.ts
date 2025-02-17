@@ -1,4 +1,3 @@
-import { User } from "@/models/user.model";
 import { IUserRepository } from "@/repositories/user.repository";
 
 export interface IUserService {

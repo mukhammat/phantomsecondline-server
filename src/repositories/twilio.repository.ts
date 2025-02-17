@@ -2,18 +2,18 @@ import twilio, { twiml } from "twilio";
 import { Country } from "@/types";
 
 const accountSid =
-    process.env.TWILIO_ACCOUNT_SID || "AC7d4be67e548f20db1cb36046b5086b88";
+    process.env.TWILIO_ACCOUNT_SID || "AC8f0360edbf9e3a098aed751f4bacb30b";
 const authToken =
-    process.env.TWILIO_AUTH_TOKEN || "aee33f974254f81fb1af063688a21815";
+    process.env.TWILIO_AUTH_TOKEN || "e7703904aec633aa99ee076205b0db37";
 const client = twilio(accountSid, authToken);
 
 export interface ITwilioRepository {
     getAvailableCountries(): Promise<Country[]>;
     getLocalNumbersByCountryIso(iso: string);
     getNumersPrices(iso: string);
-    callToNumber(toNumber: string);
+    callToNumber(to: string, from:string);
     connectCall(): Promise<string>;
-    sendSmsToNumber(number: string, text: string);
+    sendSmsToNumber(to: string, text: string, from:string);
     setWebhook(sid: string, smsWebhook: string, callWebhook: string): Promise<void>;
     createNumber(number: string);
     getCalls(number: string);
@@ -45,12 +45,12 @@ export class TwilioRepository {
     }
 
     //На данный момент не работает
-    async callToNumber(toNumber: string) {
+    async callToNumber(to: string, from:string) {
         const call = await client.calls.create({
             //url: `http://localhost:8787/api/connect-call`,
             twiml: `<Response><Say language="ru-RU">Зайнаб, зайнаб зайнаб ваш телефон был взломан если что!!!?</Say></Response>`,
-            from: "+18312176505",
-            to: toNumber,
+            from,
+            to,
         });
         return call.sid;
     }
@@ -66,11 +66,11 @@ export class TwilioRepository {
     }
     
     // Отправка смс на номер
-    async sendSmsToNumber(number: string, text: string) {
+    async sendSmsToNumber(to: string, text: string, from:string) {
         const message = await client.messages.create({
             body: text,
-            from: "+18286757829",
-            to: number,
+            from: from,
+            to: to,
         });
         return message;
     }

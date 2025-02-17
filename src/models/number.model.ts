@@ -1,4 +1,4 @@
-export interface Number {
+export interface NumberModel {
     id: string;
     local_number: string,
     sid: string,

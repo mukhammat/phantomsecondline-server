@@ -1,5 +1,4 @@
 import { HttpError } from "@/error/http-error";
-import { Number } from "@/models/number.model";
 import { INumberRepository } from "@/repositories/number.repository";
 import { ITwilioRepository } from "@/repositories/twilio.repository";
 
@@ -7,6 +6,7 @@ export interface INumberService {
     buyNumber(number:string, user_id:string, db: D1Database);
     getUserNumber(user_id:string, db: D1Database);
     deleteNumber(user_id:string, db: D1Database);
+    getAvailableNumbersByIso(iso: string): Promise<any>
 }
 
 export class NumberService implements INumberService {
@@ -35,6 +35,8 @@ export class NumberService implements INumberService {
             return numbers.results;
         }
         return numbers.results[0];
+        // const numbers = await this.numberRepository.getUserNumber(user_id, db);
+        // return numbers;
     }
 
     async deleteNumber(user_id:string, db: D1Database) {
@@ -42,8 +44,28 @@ export class NumberService implements INumberService {
         if(numbers.results.length > 1) {
             throw new HttpError("Номер не найден", 404);
         }
-        console.log(numbers.results[0]);
-        return 0;
-        //const remove = await this.twilioRepository.deleteNumber(numbers.results[0].sid);
+        const number = numbers.results[0] as { sid: string };
+        await this.twilioRepository.deleteNumber(number.sid);
+    }
+
+    async getAvailableNumbersByIso(iso: string): Promise<any> {
+        const numbers =
+            await this.twilioRepository.getLocalNumbersByCountryIso(iso);
+        console.log(numbers);
+
+        const prices = await this.twilioRepository.getNumersPrices(iso);
+        const salePrice =
+            prices.phoneNumberPrices.find(
+                (value) => value.number_type === "local"
+            ).base_price * 5;
+
+        return numbers.map((n) => ({
+            friendlyName: n.friendlyName,
+            phoneNumber: n.phoneNumber,
+            isoCountry: n.isoCountry,
+            locality: n.locality,
+            //sid: n.sid,
+            salePrice,
+        }));
     }
 }

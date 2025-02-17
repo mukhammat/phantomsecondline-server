@@ -2,6 +2,7 @@ import { z } from "zod";
 import { INumberService } from "@/services/number.service";
 import { IRequest } from "@/types";
 import { Env } from "@/utils/environment";
+import { IRequestStrict } from "itty-router";
 
 export class NumberController {
     constructor(private numberService:INumberService) {
@@ -20,6 +21,16 @@ export class NumberController {
 
     async deleteNumber(req: IRequest, env: Env) {
         await this.numberService.deleteNumber(req.user.id, env.DB);
-        return new Response("Hello", { status: 200 });
+        return new Response("Номер успешно удален!", { status: 200 });
+    }
+
+    async getAvailableNumbersByIso(req: IRequestStrict) {
+        const {iso} = req.params;
+        const countryData =
+            await this.numberService.getAvailableNumbersByIso(iso);
+        return new Response(JSON.stringify(countryData), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+        });
     }
 }
