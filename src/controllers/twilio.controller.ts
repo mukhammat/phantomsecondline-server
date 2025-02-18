@@ -1,7 +1,6 @@
 import { TwilioService } from "@/services/twilio.service"; // Импортируем сервисы
-import { TwilioRepository } from "@/repositories/twilio.repository";
-
-import { IRequestStrict } from 'itty-router'
+import { IRequest } from "@/types";
+import { Env } from "@/utils/environment";
 
 export class TwilioController {
     constructor(private twilioService:TwilioService) {
@@ -15,19 +14,11 @@ export class TwilioController {
         });
     }
 
-    async connectCall(req: Request): Promise<Response> {
-        const call = await this.twilioService.connectCall();
-        return new Response(JSON.stringify(call), {
-            status: 200,
-            headers: { "Content-Type": "application/json" },
-        });
-    }
-
-    async setWebhook(req:Request): Promise<Response> {
-        const { sid, smsWebhook, callWebhook }: { sid: string; smsWebhook: string, callWebhook:string } =
+    async setWebhook(req:IRequest, env:Env): Promise<Response> {
+        const {  smsWebhook, callWebhook }: { sid: string; smsWebhook: string, callWebhook:string } =
             await req.json();
 
-        await this.twilioService.setWebhook(sid, smsWebhook, callWebhook);
+        await this.twilioService.setWebhook(req.user.id, smsWebhook, callWebhook, env.DB);
         return new Response("Success", {
             status: 200,
             headers: { "Content-Type": "application/json" },

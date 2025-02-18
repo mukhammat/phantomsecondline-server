@@ -1,7 +1,10 @@
+import { UserModel } from "@/models/user.model";
 
 export interface IUserRepository {
     create(phone_id: string, db: D1Database):Promise<D1Result>;
     findByPhoneID(phone_id: string, db: D1Database):Promise<D1Result>;
+    getBalance( user_id:string, db: D1Database ):Promise<number | null>;
+    deductBalance(user_id: string, amount: number, db: D1Database): Promise<boolean>;
 }
 
 export class UserRepository implements IUserRepository {
@@ -28,5 +31,17 @@ export class UserRepository implements IUserRepository {
         const stmt = db.prepare(`SELECT * FROM users WHERE phone_id = ?`);
         const result = await stmt.bind(phone_id).run();
         return result;
+    }
+
+    public async getBalance( user_id:string, db: D1Database ):Promise<number | null> {
+        const stmt = db.prepare(`SELECT balance FROM users WHERE id = ?`);
+        const result:UserModel|null = await stmt.bind(user_id).first();
+        return result?.balance;
+    }
+
+    public async deductBalance(user_id: string, amount: number, db: D1Database): Promise<boolean> {
+        const stmt = db.prepare(`UPDATE users SET balance = balance - ? WHERE id = ? AND balance >= ?`);
+        const result = await stmt.bind(amount, user_id, amount).run();
+        return result.success;
     }
 }

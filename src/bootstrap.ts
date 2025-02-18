@@ -27,7 +27,8 @@ export default {
     },
     createTwilioController: () => {
         const twilioRepository = new TwilioRepository();
-        const twilioService = new TwilioService(twilioRepository);
+        const numberRepository = new NumberRepository();
+        const twilioService = new TwilioService(twilioRepository, numberRepository);
         return new TwilioController(twilioService);
     },
     createSmsController: () => {

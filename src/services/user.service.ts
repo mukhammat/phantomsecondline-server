@@ -17,4 +17,13 @@ export class UserService implements IUserService {
         }
         return isUser;
     }
+
+    async hasSufficientBalance(amount: number, user_id: string, db: D1Database):Promise<boolean> {
+        const balance = await this.userRepository.getBalance(user_id, db);
+        if(!balance) {
+            throw Error("Не достаточно баланса!");
+        }
+
+        return amount >= balance;
+    }
 }
