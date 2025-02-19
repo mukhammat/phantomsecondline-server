@@ -19,9 +19,11 @@ export interface ITwilioRepository {
     createNumber(number: string);
     getCalls(number: string);
     deleteNumber(sid:string);
+    getOutbound(number: string):Promise<MessageInstance[]>;
+    getInbound(number: string):Promise<MessageInstance[]>;
 }
 
-export class TwilioRepository {
+export class TwilioRepository implements ITwilioRepository {
     async getAvailableCountries(): Promise<Country[]> {
         const countries =
             await client.pricing.v1.phoneNumbers.countries.list();
@@ -106,7 +108,20 @@ export class TwilioRepository {
 
     async deleteNumber (sid: string) {
         const deletedPhoneNumber = await client.incomingPhoneNumbers(sid).remove();
-        console.log(deletedPhoneNumber);
         return deletedPhoneNumber;
+    }
+
+    async getOutbound(number: string):Promise<MessageInstance[]> {
+        const outbound = await client.messages.list({
+            from: number 
+        });
+        return outbound;
+    }
+
+    async getInbound(number: string):Promise<MessageInstance[]> {
+        const inbound = await client.messages.list({
+            to: number 
+        });
+        return inbound;
     }
 }

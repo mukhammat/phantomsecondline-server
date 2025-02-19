@@ -20,4 +20,19 @@ export class SmsController {
             headers: { "Content-Type": "application/json" },
         });
     }
+
+    async getAll(req:IRequest, env: Env):Promise<Response> {
+        const messages = await this.smsService.getAll(req.user.id, env.DB);
+
+        if(!messages) {
+            return new Response(JSON.stringify({messages: "Не найдено!"}), {
+                status: 400,
+                headers: { "Content-Type": "application/json" },
+            });
+        }
+        return new Response(JSON.stringify(messages), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+        });
+    }
 }

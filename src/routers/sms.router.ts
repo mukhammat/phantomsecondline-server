@@ -7,6 +7,7 @@ const router = Router();
 const smsController = bootstrap.createSmsController();
 
 router
-.post('/api/number/send-sms', authorization, smsController.sendSmsToNumber.bind(smsController))
+.post('/api/sms/send', authorization, smsController.sendSmsToNumber.bind(smsController))
+.get('/api/sms/get-all', authorization, smsController.getAll.bind(smsController))
 
 export default router;

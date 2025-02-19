@@ -51,7 +51,6 @@ export class NumberRepository implements INumberRepository {
      * @returns {Promise<D1Result>} Результат выполнения запроса.
      */
     async getOne(user_id:string, db: D1Database):Promise<unknown> {
-        console.log(user_id);
         const stmt = db.prepare(`SELECT * FROM numbers WHERE user_id = ?`);
         const result = await stmt.bind(user_id).first();
         return result;
