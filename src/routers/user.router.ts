@@ -6,5 +6,5 @@ const router = Router();
 const userController = bootstrap.createUserController();
 
 router
-.post('/api/auth/register', userController.registerUser.bind(userController));
+.post('/api/user/register', userController.registerUser.bind(userController));
 export default router;

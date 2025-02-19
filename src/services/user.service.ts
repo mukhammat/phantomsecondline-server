@@ -27,4 +27,12 @@ export class UserService implements IUserService {
 
         return amount >= balance;
     }
+
+    async deductBalance(user_id: string, amount: number, db: D1Database):Promise<boolean> {
+        const isSuccess = await this.userRepository.deductBalance(user_id, amount, db);
+        if(!isSuccess) {
+            throw Error("Ошибка списания баланса");
+        }
+        return true;
+    }
 }

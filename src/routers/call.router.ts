@@ -7,7 +7,7 @@ const router = Router();
 const callController = bootstrap.createCallController()
 
 router
-.post('/api/call', authorization, callController.callToNumber.bind(callController))
+.post('/api/call/voice-call', authorization, callController.callToNumber.bind(callController))
 .get('/api/call/getCalls', authorization, callController.getCalls.bind(callController))
 
 export default router;

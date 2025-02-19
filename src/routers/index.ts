@@ -11,11 +11,11 @@ const router = Router({
   catch: errorHandler
 });
 
-router.all('/api/*', numberRouter.fetch);
 router.all('/api/*', twilioRouter.fetch);
-router.all('/api/*', userRouter.fetch);
-router.all('/api/*', smsRouter.fetch);
-router.all('/api/*', callRouter.fetch);
+router.all('/api/number/*', numberRouter.fetch);
+router.all('/api/user/*', userRouter.fetch);
+router.all('/api/sms/*', smsRouter.fetch);
+router.all('/api/call/*', callRouter.fetch);
 router.all('/api/test/*', testsRouter.fetch)
 router.all('*', ()=> {
     return new Response(

@@ -2,9 +2,10 @@ import { Country } from "@/types";
 import { TwilioRepository } from "@/repositories/twilio.repository";
 import { NumberRepository } from "@/repositories/number.repository";
 import { NumberModel } from "@/models/number.model";
+import { HttpError } from "@/error/http-error";
 
 export interface ITwilioService {
-    getAvailableCountries(): Promise<any>;
+    getAvailableCountries(): Promise<Country[]>;
     setWebhook(user_id: string, smsWebhook: string, callWebhook: string,  db: D1Database);
 }
 
@@ -13,7 +14,11 @@ export class TwilioService implements ITwilioService {
     }
 
     async getAvailableCountries(): Promise<Country[]> {
-        return await this.twilioRepository.getAvailableCountries();
+        const countries = await this.twilioRepository.getAvailableCountries();
+        return countries.map((c) => ({
+            iso: c.isoCountry,
+            country: c.country,
+        }));
     }
 
     async setWebhook(user_id:string, smsWebhook:string, callWebhook:string, db: D1Database) {

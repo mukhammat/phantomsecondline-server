@@ -1,6 +1,6 @@
 import twilio from "twilio";
-import { Country } from "@/types";
-import { MessageInstance } from "twilio/lib/rest/api/v2010/account/message";
+import { MessageInstance } from "twilio/lib/rest/api/v2010/account/message"; 
+import { CountryInstance } from "twilio/lib/rest/pricing/v1/phoneNumber/country";
 
 const accountSid =
     process.env.TWILIO_ACCOUNT_SID || "AC8f0360edbf9e3a098aed751f4bacb30b";
@@ -9,7 +9,7 @@ const authToken =
 const client = twilio(accountSid, authToken);
 
 export interface ITwilioRepository {
-    getAvailableCountries(): Promise<Country[]>;
+    getAvailableCountries(): Promise<CountryInstance[]>;
     getLocalNumbersByCountryIso(iso: string);
     getNumersPrices(iso: string);
     callToNumber(to: string, from:string);
@@ -19,18 +19,15 @@ export interface ITwilioRepository {
     createNumber(number: string);
     getCalls(number: string);
     deleteNumber(sid:string);
-    getOutbound(number: string):Promise<MessageInstance[]>;
-    getInbound(number: string):Promise<MessageInstance[]>;
+    getOutboundSms(number: string):Promise<MessageInstance[]>;
+    getInboundSms(number: string):Promise<MessageInstance[]>;
 }
 
 export class TwilioRepository implements ITwilioRepository {
-    async getAvailableCountries(): Promise<Country[]> {
+    async getAvailableCountries(): Promise<CountryInstance[]> {
         const countries =
             await client.pricing.v1.phoneNumbers.countries.list();
-        return countries.map((c) => ({
-            iso: c.isoCountry,
-            country: c.country,
-        }));
+        return countries;
     }
 
     async getLocalNumbersByCountryIso(iso: string) {
@@ -111,14 +108,14 @@ export class TwilioRepository implements ITwilioRepository {
         return deletedPhoneNumber;
     }
 
-    async getOutbound(number: string):Promise<MessageInstance[]> {
+    async getOutboundSms(number: string):Promise<MessageInstance[]> {
         const outbound = await client.messages.list({
             from: number 
         });
         return outbound;
     }
 
-    async getInbound(number: string):Promise<MessageInstance[]> {
+    async getInboundSms(number: string):Promise<MessageInstance[]> {
         const inbound = await client.messages.list({
             to: number 
         });

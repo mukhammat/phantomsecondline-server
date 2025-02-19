@@ -28,8 +28,8 @@ export class SmsService implements ISmsService {
         if(!hasNumber) {
             return hasNumber;
         }
-        const outbound = await this.twilioRepository.getOutbound(hasNumber.local_number);
-        const inbound = await this.twilioRepository.getInbound(hasNumber.local_number)
+        const outbound = await this.twilioRepository.getOutboundSms(hasNumber.local_number);
+        const inbound = await this.twilioRepository.getInboundSms(hasNumber.local_number)
         const allMessages = [...outbound, ...inbound];
         return allMessages.sort((a, b) => new Date(a.dateSent).getTime() - new Date(b.dateSent).getTime());
     }
