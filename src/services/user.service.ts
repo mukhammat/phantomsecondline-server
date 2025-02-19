@@ -2,6 +2,7 @@ import { IUserRepository } from "@/repositories/user.repository";
 
 export interface IUserService {
     register(phone_id: string, db: D1Database);
+    hasSufficientBalance(amount: number, user_id: string, db: D1Database):Promise<boolean>;
 }
 
 export class UserService implements IUserService {

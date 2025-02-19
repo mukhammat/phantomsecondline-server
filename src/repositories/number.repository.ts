@@ -2,7 +2,7 @@ export interface INumberRepository {
     create(number:string, user_id:string, db: D1Database):Promise<D1Result>;
     findByNumber(phone: string, db: D1Database):Promise<D1Result>;
     getUserNumbers(user_id:string, db: D1Database):Promise<D1Result>;
-    getUserNumber(user_id:string, db: D1Database):Promise<Record<string, unknown>>
+    getOne(user_id:string, db: D1Database):Promise<unknown>
 }
 
 export class NumberRepository implements INumberRepository {
@@ -21,7 +21,7 @@ export class NumberRepository implements INumberRepository {
 
     /**
      * Ищет номер в базе данных.
-     * @param {string} phone - Номер телефона.
+     * @param {string} number - Номер телефона.
      * @param {D1Database} db - База данных
      * @returns {Promise<D1Result>} Результат выполнения запроса.
      */
@@ -45,12 +45,12 @@ export class NumberRepository implements INumberRepository {
     }
 
     /**
-     * Ищет первый номер пользователя в базе данных.
+     * Выводит первый номер пользователя в базе данных.
      * @param {string} user_id - Идентификатор пользователя.
      * @param {D1Database} db - База данных
      * @returns {Promise<D1Result>} Результат выполнения запроса.
      */
-    async getUserNumber(user_id:string, db: D1Database):Promise<Record<string, unknown>> {
+    async getOne(user_id:string, db: D1Database):Promise<unknown> {
         console.log(user_id);
         const stmt = db.prepare(`SELECT * FROM numbers WHERE user_id = ?`);
         const result = await stmt.bind(user_id).first();

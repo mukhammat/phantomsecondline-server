@@ -1,4 +1,4 @@
--- Migration number: 0001 	 2025-02-18T20:28:18.827Z
+-- Migration number: 0002 	 2025-02-18T20:29:44.952Z
 DROP TABLE users;
 DROP TABLE numbers;
 DROP TABLE messages;

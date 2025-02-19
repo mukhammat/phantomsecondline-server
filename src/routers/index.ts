@@ -5,6 +5,7 @@ import numberRouter from './number.router'
 import { errorHandler } from "@/middleware/error-handler"
 import smsRouter from './sms.router'
 import callRouter from './call.router'
+import testsRouter from './tests.router'
 
 const router = Router({
   catch: errorHandler
@@ -15,7 +16,7 @@ router.all('/api/*', twilioRouter.fetch);
 router.all('/api/*', userRouter.fetch);
 router.all('/api/*', smsRouter.fetch);
 router.all('/api/*', callRouter.fetch);
-
+router.all('/api/test/*', testsRouter.fetch)
 router.all('*', ()=> {
     return new Response(
       JSON.stringify({ error: 'Not Found' }),

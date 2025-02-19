@@ -33,13 +33,13 @@ export class UserRepository implements IUserRepository {
         return result;
     }
 
-    public async getBalance( user_id:string, db: D1Database ):Promise<number | null> {
+    async getBalance( user_id:string, db: D1Database ):Promise<number | null> {
         const stmt = db.prepare(`SELECT balance FROM users WHERE id = ?`);
         const result:UserModel|null = await stmt.bind(user_id).first();
         return result?.balance;
     }
 
-    public async deductBalance(user_id: string, amount: number, db: D1Database): Promise<boolean> {
+    async deductBalance(user_id: string, amount: number, db: D1Database): Promise<boolean> {
         const stmt = db.prepare(`UPDATE users SET balance = balance - ? WHERE id = ? AND balance >= ?`);
         const result = await stmt.bind(amount, user_id, amount).run();
         return result.success;

@@ -1,5 +1,6 @@
-import twilio, { twiml } from "twilio";
+import twilio from "twilio";
 import { Country } from "@/types";
+import { MessageInstance } from "twilio/lib/rest/api/v2010/account/message";
 
 const accountSid =
     process.env.TWILIO_ACCOUNT_SID || "AC8f0360edbf9e3a098aed751f4bacb30b";
@@ -66,7 +67,7 @@ export class TwilioRepository {
     }
     
     // Отправка смс на номер
-    async sendSmsToNumber(to: string, text: string, from:string) {
+    async sendSmsToNumber(to: string, text: string, from:string):Promise<MessageInstance> {
         const message = await client.messages.create({
             body: text,
             from: from,
