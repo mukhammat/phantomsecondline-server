@@ -555,6 +555,19 @@ const options = {
               "example": 500
             }
           }
+        },
+        ServiceConnectionError: {
+          type: 'object',
+          properties: {
+            message: {
+              type: 'string',
+              example: 'Произошла ошибка при подключении к сервису.'
+            },
+            status: {
+              type: 'integer',
+              example: 403
+            }
+          }
         }
       }
     }
