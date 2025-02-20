@@ -10,6 +10,9 @@ export class UserController {
     async registerUser(req: Request, env:Env):Promise<Response> {
         const { phone_id } = z.object({ phone_id: z.string().min(1) }).parse(await req.json());
         const user = await this.userService.register(phone_id, env.DB);
-        return new Response(JSON.stringify(user), { status: 200 });
+        return new Response(JSON.stringify({ "message": "Success", "status": 200 }), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+        });
     }
 }

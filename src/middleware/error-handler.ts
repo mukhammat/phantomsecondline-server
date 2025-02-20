@@ -1,13 +1,12 @@
 import { HttpError } from '@/error/http-error';
-import { NonRetryableError } from 'cloudflare:workflows';
 import { ErrorHandler } from 'itty-router';
 
 // Глобальный обработчик ошибок
 export const errorHandler: ErrorHandler = (error, request) => {
-  console.log(error);
+  console.log(error.cause);
 
   let status:number = 500;
-  let errorMessage:string = "Ошибка сервера";
+  let errorMessage:string = "Internal Server Error";
   
   const code = error?.code;
   if(code) {
@@ -23,7 +22,6 @@ export const errorHandler: ErrorHandler = (error, request) => {
         break;
       default:
         status = 500;
-        errorMessage = "Internal Server Error";
         break;
     }
   }

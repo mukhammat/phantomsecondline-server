@@ -23,6 +23,9 @@ export class TwilioService implements ITwilioService {
 
     async setWebhook(user_id:string, smsWebhook:string, callWebhook:string, db: D1Database) {
         const num = (await this.numberRepository.getUserNumbers(user_id, db)).results[0] as NumberModel;
+        if(!num) {
+            throw new HttpError("You don't have active number", 404);
+        }
         return this.twilioRepository.setWebhook(num.sid, smsWebhook, callWebhook);
     }
 }

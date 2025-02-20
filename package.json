@@ -21,6 +21,7 @@
 		"@types/node": "^20.8.3",
 		"@types/service-worker-mock": "^2.0.4",
 		"@types/twilio": "^3.19.3",
+		"swagger-jsdoc": "^6.2.8",
 		"wrangler": "^3.106.0"
 	}
 }
