@@ -1,4 +1,3 @@
-import { NumberModel } from "@/models/number.model";
 import { INumberRepository } from "@/repositories/number.repository";
 import { ITwilioRepository } from "@/repositories/twilio.repository";
 
@@ -15,21 +14,15 @@ export class SmsService implements ISmsService {
     }
 
     async sendSmsToNumber(number: string, text: string, user_id: string, db: D1Database) {
-        const hasNumber = await this.numberRepository.getOne(user_id, db) as NumberModel | null;
-        if(!hasNumber) {
-            return null;
-        }
-        const messageInstance = await this.twilioRepository.sendSmsToNumber(number, text, hasNumber.local_number);
+        const result = await this.numberRepository.getOneOrFail(user_id, db);
+        const messageInstance = await this.twilioRepository.sendSmsToNumber(number, text, result.local_number);
         return messageInstance.status;
     }
 
     async getAll(user_id: string, db:D1Database) {
-        const hasNumber = await this.numberRepository.getOne(user_id, db) as NumberModel | null;
-        if(!hasNumber) {
-            return hasNumber;
-        }
-        const outbound = await this.twilioRepository.getOutboundSms(hasNumber.local_number);
-        const inbound = await this.twilioRepository.getInboundSms(hasNumber.local_number)
+        const result = await this.numberRepository.getOneOrFail(user_id, db);
+        const outbound = await this.twilioRepository.getOutboundSms(result.local_number);
+        const inbound = await this.twilioRepository.getInboundSms(result.local_number);
         const allMessages = [...outbound, ...inbound];
         return allMessages.sort((a, b) => new Date(a.dateSent).getTime() - new Date(b.dateSent).getTime());
     }

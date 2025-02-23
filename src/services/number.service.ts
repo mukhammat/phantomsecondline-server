@@ -15,12 +15,12 @@ export class NumberService implements INumberService {
 
     async buyNumber(number:string, user_id:string, db: D1Database) {
         const isNumber = await this.numberRepository.findByNumber(number, db);
-        if(isNumber.results.length >= 1) {
+        if(isNumber) {
             throw new HttpError("Номер не доступен!", 404);
         }
 
-        const userNumbers = await this.numberRepository.getUserNumbers(user_id, db);
-        if(userNumbers.results.length >= 1) {
+        const userNumbers = await this.numberRepository.getOne(user_id, db);
+        if(userNumbers) {
             throw new HttpError("Вы не можете иметь больше 1 номера!", 404);
         }
 
@@ -30,28 +30,17 @@ export class NumberService implements INumberService {
     }
 
     async getUserNumber(user_id:string, db: D1Database) {
-        const numbers = await this.numberRepository.getUserNumbers(user_id, db);
-        if(numbers.results.length > 1) {
-            return numbers.results;
-        }
-        return numbers.results[0];
-        // const numbers = await this.numberRepository.getUserNumber(user_id, db);
-        // return numbers;
+        return await this.numberRepository.getOneOrFail(user_id, db);
     }
 
     async deleteNumber(user_id:string, db: D1Database) {
-        const numbers = await this.numberRepository.getUserNumbers(user_id, db);
-        if(numbers.results.length > 1) {
-            throw new HttpError("Номер не найден", 404);
-        }
-        const number = numbers.results[0] as { sid: string };
+        const number = await this.numberRepository.getOneOrFail(user_id, db);
         await this.twilioRepository.deleteNumber(number.sid);
     }
 
     async getAvailableNumbersByIso(iso: string): Promise<any> {
-        const numbers =
+        const number =
             await this.twilioRepository.getLocalNumbersByCountryIso(iso);
-        console.log(numbers);
 
         const prices = await this.twilioRepository.getNumersPrices(iso);
         const salePrice =
@@ -59,7 +48,7 @@ export class NumberService implements INumberService {
                 (value) => value.number_type === "local"
             ).base_price * 5;
 
-        return numbers.map((n) => ({
+        return number.map((n) => ({
             friendlyName: n.friendlyName,
             phoneNumber: n.phoneNumber,
             isoCountry: n.isoCountry,

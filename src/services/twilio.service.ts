@@ -1,8 +1,6 @@
 import { Country } from "@/types";
 import { TwilioRepository } from "@/repositories/twilio.repository";
 import { NumberRepository } from "@/repositories/number.repository";
-import { NumberModel } from "@/models/number.model";
-import { HttpError } from "@/error/http-error";
 
 export interface ITwilioService {
     getAvailableCountries(): Promise<Country[]>;
@@ -22,10 +20,7 @@ export class TwilioService implements ITwilioService {
     }
 
     async setWebhook(user_id:string, smsWebhook:string, callWebhook:string, db: D1Database) {
-        const num = (await this.numberRepository.getUserNumbers(user_id, db)).results[0] as NumberModel;
-        if(!num) {
-            throw new HttpError("You don't have active number", 404);
-        }
-        return this.twilioRepository.setWebhook(num.sid, smsWebhook, callWebhook);
+        const result = await this.numberRepository.getOneOrFail(user_id, db);
+        return this.twilioRepository.setWebhook(result.sid, smsWebhook, callWebhook);
     }
 }
