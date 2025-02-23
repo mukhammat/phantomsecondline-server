@@ -1,14 +1,35 @@
 import { HttpError } from '@/error/http-error';
 import { ErrorHandler } from 'itty-router';
+import { ZodError } from 'zod';
 
-// Глобальный обработчик ошибок
+interface ErrorResponse {
+  message: string;
+  status: number;
+  errors?: Record<string, string[]>;
+}
+
 export const errorHandler: ErrorHandler = (error, request) => {
   let status:number = 500;
   let errorMessage:string = "Internal Server Error";
-  
-  const code = error?.code;
-  if(code) {
-    switch (code) {
+  let validationErrors: Record<string, string[]> | undefined;
+
+  if (error instanceof ZodError) {
+    status = 400;
+    errorMessage = "Ошибка валидации данных";
+    validationErrors = {};
+
+    error.errors.forEach((err) => {
+      const path = err.path.join('.');
+      if (!validationErrors[path]) {
+        validationErrors[path] = [];
+      }
+      validationErrors[path].push(err.message);
+    });
+  } else if (error instanceof HttpError) {
+    errorMessage = error.message;
+    status = error.status;
+  } else if('code' in error) {
+    switch (error.code) {
       case 10001:
         status = 403;
         errorMessage = "Произошла ошибка при подключении к сервису.";
@@ -26,24 +47,24 @@ export const errorHandler: ErrorHandler = (error, request) => {
         status = 500;
         break;
     }
+  } else {
+    console.error("Необработанная ошибка:", error);
   }
 
-  if (error instanceof HttpError) {
-    errorMessage = error.message;
-    status = error.status;
-  }
+  const errorResponse: ErrorResponse = {
+    message: errorMessage,
+    status: status
+  };
 
-  console.error("Ошибка", error.message);
-  console.error("со статусом", status);
+  if (validationErrors) {
+    errorResponse.errors = validationErrors;
+  }
 
   return new Response(
-    JSON.stringify({
-      message: errorMessage,
-      status: status
-    }),
+    JSON.stringify(errorResponse),
     {
       status: status,
       headers: { 'Content-Type': 'application/json' },
-    },
+    }
   );
 };

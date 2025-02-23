@@ -1,14 +1,19 @@
 import { ICallService } from "@/services/call.service";
 import { IRequest } from "@/types";
 import { Env } from "@/utils/environment";
+import { z } from "zod";
 
 export class CallController {
     constructor(private callService: ICallService) {
     }
 
     async callToNumber(req: IRequest, env:Env): Promise<Response> {
-        const { to }: { to: string } =
-            await req.json();
+        const { to } = z.object({ to: z.string()
+            .regex(/^\+?\d+$/, "Номер должен содержать только цифры и может начинаться с +")
+            .min(10, "Минимум 10 символов")
+            .max(20, "Номер не больше 20 символов") })
+            .parse(await req.json());
+
         const message = await this.callService.callToNumber(
             to,
             req.user.id,
