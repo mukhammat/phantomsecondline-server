@@ -11,7 +11,7 @@ export class NumberController {
 
     async buyNumber(req:IRequest, env:Env) {
         const { number } = z.object({ number: z.string().min(10).max(20) }).parse(await req.json());
-        const newNumber = await this.numberService.buyNumber(number, req.user.id, env.DB);
+        await this.numberService.buyNumber(number, req.user.id, env.DB);
         return new Response(JSON.stringify({ "message": "Номер успешно куплен!", "status": 200 }), {
             status: 200,
             headers: { "Content-Type": "application/json" },
@@ -20,9 +20,6 @@ export class NumberController {
 
     async getMyNumber(req: IRequest, env: Env) {
         const numbers = await this.numberService.getUserNumber(req.user.id, env.DB);
-        if(!numbers) {
-            throw new HttpError("У вас нет номера", 400);
-        }
         return new Response(JSON.stringify(numbers), {
             status: 200,
             headers: { "Content-Type": "application/json" },

@@ -3,9 +3,9 @@ import { MessageInstance } from "twilio/lib/rest/api/v2010/account/message";
 import { CountryInstance } from "twilio/lib/rest/pricing/v1/phoneNumber/country";
 
 const accountSid =
-    process.env.TWILIO_ACCOUNT_SID || "AC8f0360edbf9e3a098aed751f4bacb30b";
+    process.env.TWILIO_ACCOUNT_SID || "AC7d4be67e548f20db1cb36046b5086b88";
 const authToken =
-    process.env.TWILIO_AUTH_TOKEN || "e7703904aec633aa99ee076205b0db37";
+    process.env.TWILIO_AUTH_TOKEN || "aee33f974254f81fb1af063688a21815";
 const client = twilio(accountSid, authToken);
 
 export interface ITwilioRepository {
