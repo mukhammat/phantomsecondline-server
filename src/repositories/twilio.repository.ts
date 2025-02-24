@@ -77,10 +77,6 @@ export class TwilioRepository implements ITwilioRepository {
 
     // Установка webhook для sms
     async setWebhook(sid:string, smsWebhook:string, callWebhook:string): Promise<void> {
-        const incomingPhoneNumbers = await client.incomingPhoneNumbers.list({
-            limit: 20,
-        });
-        console.log(incomingPhoneNumbers);
         await client.incomingPhoneNumbers(sid).update({ smsUrl: smsWebhook, voiceUrl:callWebhook  });
         return;
     }
