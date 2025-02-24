@@ -6,7 +6,8 @@ export interface INumberRepository {
     findByNumber(phone: string, db: D1Database):Promise<NumberModel | null>;
     getAll(user_id:string, db: D1Database, options?: { limit?: number; offset?: number }):Promise<D1Result>;
     getOne(user_id:string, db: D1Database):Promise<NumberModel | null>
-    getOneOrFail(user_id:string, db: D1Database, message?: string):Promise<NumberModel>
+    getOneOrFail(user_id:string, db: D1Database, message?: string):Promise<NumberModel>;
+    delete(sid: string, db: D1Database):Promise<void>;
 }
 
 export class NumberRepository implements INumberRepository {
@@ -85,5 +86,16 @@ export class NumberRepository implements INumberRepository {
             throw new HttpError(message,404);
         }
         return number;
+    }
+
+    /**
+     * Удаляет с бд номер
+     * @param sid 
+     * @param db
+     * @returns Promice<void>
+     */
+    async delete(sid: string, db: D1Database):Promise<void> {
+        const deleteStmt = db.prepare(`DELETE FROM ${this.TABLE_NAME} WHERE sid = ?`);
+        await deleteStmt.bind(sid).run();
     }
 }

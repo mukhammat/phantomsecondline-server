@@ -3,17 +3,24 @@ import { INumberRepository } from "@/repositories/number.repository";
 import { ITwilioRepository } from "@/repositories/twilio.repository";
 
 export interface INumberService {
-    buyNumber(number:string, user_id:string, db: D1Database);
+    buyNumber(number:string, user_id:string, url: string, db: D1Database);
     getUserNumber(user_id:string, db: D1Database);
-    deleteNumber(user_id:string, db: D1Database);
+    deleteNumber(user_id:string, db: D1Database):Promise<void>
     getAvailableNumbersByIso(iso: string): Promise<any>
 }
 
 export class NumberService implements INumberService {
+    private readonly SMS_WEBHOOK_PATH = "/api/sms/webhook";
+    private readonly CALL_WEBHOOK_PATH = "/api/call/webhook";
+
     constructor(private numberRepository: INumberRepository, private twilioRepository: ITwilioRepository) {
     }
 
-    async buyNumber(number:string, user_id:string, db: D1Database) {
+    private async setWebhooks(sid:string, url:string):Promise<void> {
+        await this.twilioRepository.setWebhook(sid, `${url}${this.SMS_WEBHOOK_PATH}`, `${url}${this.CALL_WEBHOOK_PATH}`);
+    }
+
+    async buyNumber(number:string, user_id:string, host:string, db: D1Database) {
         const isNumber = await this.numberRepository.findByNumber(number, db);
         if(isNumber) {
             throw new HttpError("Номер не доступен!", 404);
@@ -26,6 +33,7 @@ export class NumberService implements INumberService {
 
         const newNumber = await this.twilioRepository.createNumber(number);
         await this.numberRepository.create(number, user_id, db);
+        await this.setWebhooks(newNumber.sid, host);
         return newNumber;
     }
 
@@ -33,8 +41,9 @@ export class NumberService implements INumberService {
         return await this.numberRepository.getOneOrFail(user_id, db);
     }
 
-    async deleteNumber(user_id:string, db: D1Database) {
+    async deleteNumber(user_id:string, db: D1Database):Promise<void> {
         const number = await this.numberRepository.getOneOrFail(user_id, db);
+        await this.numberRepository.delete(number.sid, db);
         await this.twilioRepository.deleteNumber(number.sid);
     }
 

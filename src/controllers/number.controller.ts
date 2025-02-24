@@ -15,7 +15,8 @@ export class NumberController {
             .max(20, "Номер не больше 20 символов") })
             .parse(await req.json());
 
-        await this.numberService.buyNumber(number, req.user.id, env.DB);
+        const host = req.headers.get("host");
+        await this.numberService.buyNumber(number, req.user.id, host ,env.DB);
         return new Response(JSON.stringify({ "message": "Номер успешно куплен!", "status": 200 }), {
             status: 200,
             headers: { "Content-Type": "application/json" },

@@ -49,4 +49,11 @@ export class SmsController {
             headers: { "Content-Type": "application/json" },
         });
     }
+
+    async handleSmsWebhook(req:IRequest) {
+        return new Response(JSON.stringify({message: "Success"}), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+        });
+    }
 }

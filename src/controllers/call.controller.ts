@@ -32,4 +32,11 @@ export class CallController {
             headers: { "Content-Type": "application/json" },
         });
     }
+
+    async handleCallWebhook(req:IRequest) {
+        return new Response(JSON.stringify({message: "Success"}), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+        });
+    }
 }
