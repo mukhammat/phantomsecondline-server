@@ -24,12 +24,13 @@
 		"types": [
 			"@types/node",
 			"@types/service-worker-mock",
-			"@cloudflare/workers-types/2023-07-01"
+			"@cloudflare/workers-types/2023-07-01",
+			"jest"
 		],
 		"paths": {
 			"@/*": ["./*"]
-		}
+		},
 	},
 	"exclude": ["node_modules", "dist", "tests"],
-	"include": ["src", "jest.config.ts"]
+	"include": ["src/**/*.ts", "__tests__/**/*.ts"]
 }

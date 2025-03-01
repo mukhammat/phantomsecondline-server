@@ -1,23 +1,21 @@
-import { TwilioRepository } from "@/repositories/twilio.repository";
-import { NumberRepository } from "@/repositories/number.repository";
-import { NumberService } from "@/services/number.service";
-import { NumberController } from "@/controllers/number.controller";
-import { UserController } from "@/controllers/user.controller";
-import { UserRepository } from "@/repositories/user.repository";
-import { UserService } from "@/services/user.service";
-import { TwilioService } from "@/services/twilio.service";
-import { TwilioController } from "@/controllers/twilio.controller";
-import { SmsService } from "@/services/sms.service";
-import { SmsController } from "@/controllers/sms.controller";
-import { CallService } from "@/services/call.service";
-import { CallController } from "@/controllers/call.controller";
+import { NumberRepository } from "@/modules/number/number.repository";
+import { NumberService } from "@/modules/number/number.service";
+import { NumberController } from "@/modules/number/number.controller";
+import { UserController } from "@/modules/user/user.controller";
+import { UserRepository } from "@/modules/user/user.repository";
+import { UserService } from "@/modules/user/user.service";
+import { TwilioService } from "@/common/services/twilio.service";
+import { SmsService } from "@/modules/sms/sms.service";
+import { SmsController } from "@/modules/sms/sms.controller";
+import { CallService } from "@/modules/call/call.service";
+import { CallController } from "@/modules/call/call.controller";
 
 
 export default {
     createNumberController: () => {
         const numberRepository = new NumberRepository();
-        const twilioRepository = new TwilioRepository();
-        const service =  new NumberService(numberRepository, twilioRepository);
+        const twilioService = new TwilioService();
+        const service =  new NumberService(numberRepository, twilioService);
         return new NumberController(service);
     },
     createUserController: () => {
@@ -25,22 +23,18 @@ export default {
         const userService = new UserService(userRepository);
         return new UserController(userService);
     },
-    createTwilioController: () => {
-        const twilioRepository = new TwilioRepository();
-        const numberRepository = new NumberRepository();
-        const twilioService = new TwilioService(twilioRepository, numberRepository);
-        return new TwilioController(twilioService);
-    },
     createSmsController: () => {
-        const twilioRepository = new TwilioRepository();
+        const twilioService = new TwilioService();
         const numberRepository = new NumberRepository();
-        const smsService = new SmsService(twilioRepository, numberRepository);
-        return new SmsController(smsService);
+        const smsService = new SmsService(twilioService, numberRepository);
+        const userRepository = new UserRepository()
+        const userService = new UserService(userRepository)
+        return new SmsController(smsService, userService);
     },
     createCallController: () => {
-        const twilioRepository = new TwilioRepository();
+        const twilioService = new TwilioService();
         const numberRepository = new NumberRepository();
-        const callService = new CallService(numberRepository,twilioRepository);
+        const callService = new CallService(numberRepository,twilioService);
         return new CallController(callService);
     }
 }
