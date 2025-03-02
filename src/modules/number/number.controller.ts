@@ -4,16 +4,23 @@ import { INumberService } from "@/modules/number/number.service";
 import { IRequest } from "@/common/types";
 import { Env } from "@/common/utils/environment";
 
+const NumberValidation = {
+    buyNumber: z.object({ number: z.string()
+        .regex(/^\+?\d+$/, "Номер должен содержать только цифры и может начинаться с +")
+        .min(10, "Минимум 10 символов")
+        .max(20, "Номер не больше 20 символов") }),
+    getAvailableNumbersByIso: z.object({ iso: z
+        .string()
+        .min(2, "Минимум 2 символов")
+        .max(3, "Максимум 3 симвоа ") }),
+}
+
 export class NumberController {
     constructor(private numberService:INumberService) {
     }
 
     async buyNumber(req:IRequest, env:Env) {
-        const { number } = z.object({ number: z.string()
-            .regex(/^\+?\d+$/, "Номер должен содержать только цифры и может начинаться с +")
-            .min(10, "Минимум 10 символов")
-            .max(20, "Номер не больше 20 символов") })
-            .parse(await req.json());
+        const { number } = NumberValidation.buyNumber.parse(await req.json());
 
         const host = req.headers.get("host");
         await this.numberService.buyNumber(number, req.user.id, host ,env.DB);

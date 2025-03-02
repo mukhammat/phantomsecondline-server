@@ -4,23 +4,27 @@ import { UserService } from "@/modules/user/user.service";
 import { IRequest } from "@/common/types";
 import { Env } from "@/common/utils/environment";
 
+const SmsValidation = {
+    sendSmsToNumber: z.object({
+        number: z.string()
+        .min(10, "Номер должен содержать минимум 10 символов")
+        .max(20, "Номер должен содержать максимум 20 символов")
+        .regex(/^\+?\d+$/, "Номер должен содержать только цифры и может начинаться с +"),
+        text: z.string()
+        .min(1, "Текст сообщения не может быть пустым")
+        .max(1000, "Текст сообщения не должен превышать 1000 символов"),
+    }),
+}
+
 export class SmsController {
     constructor(private smsService: ISmsService, private userService: UserService) {
     }
 
     async sendSmsToNumber(req: IRequest, env:Env): Promise<Response> {
-        const { number, text } = z.object({
-                number: z.string()
-                .min(10, "Номер должен содержать минимум 10 символов")
-                .max(20, "Номер должен содержать максимум 20 символов")
-                .regex(/^\+?\d+$/, "Номер должен содержать только цифры и может начинаться с +"),
-                text: z.string()
-                .min(1, "Текст сообщения не может быть пустым")
-                .max(1000, "Текст сообщения не должен превышать 1000 символов"),
-            }).parse(await req.json());
+        const { number, text } = SmsValidation.sendSmsToNumber.parse(await req.json());
             
         const id = req.user.id;
-        const db = env.DB;
+       const db = env.DB;
 
         const message = await this.smsService.sendSmsToNumber(
             number,

@@ -21,6 +21,9 @@ export interface ITwilioService {
     deleteNumber(sid:string);
     getOutboundSms(number: string):Promise<MessageInstance[]>;
     getInboundSms(number: string):Promise<MessageInstance[]>;
+    getSmsPrices(iso: string);
+    getBalance();
+    getVoiceCallPricing(from: string, to: string);
 }
 
 export class TwilioService implements ITwilioService {

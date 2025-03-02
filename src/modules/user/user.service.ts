@@ -1,3 +1,4 @@
+import { HttpError } from "@/common/error/http-error";
 import { IUserRepository } from "@/modules/user/user.repository";
 
 export interface IUserService {
@@ -34,5 +35,13 @@ export class UserService implements IUserService {
             throw Error("Ошибка списания баланса");
         }
         return true;
+    }
+
+    async getBalance(user_id: string, db: D1Database) {
+        const balance = await this.userRepository.getBalance(user_id, db);
+        if(balance === null) {
+            throw new HttpError("Ошибка баланса", 400);
+        }
+        return balance;
     }
 }
